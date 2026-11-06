@@ -1,0 +1,23 @@
+name: Test pipeline ODC
+
+on:
+  repository_dispatch:
+    types: [odc_version_published]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node / Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Automated Tests
+        run: |
+          echo "A executar testes para a versao do ODC..."
+          # Coloque aqui os comandos dos seus testes (ex: testes de API com Newman/Postman, Cypress, Playwright, etc.)
+          # npm install && npm test
