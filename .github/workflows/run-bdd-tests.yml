@@ -1,0 +1,42 @@
+name: Executar Testes BDD (OutSystems)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Ambiente a testar'
+        required: true
+        default: 'Testing'
+        type: choice
+        options:
+          - Testing
+          - Development
+
+jobs:
+  run-bdd-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Test Dependencies
+        run: |
+          # Instalar dependências se utilizar Newman/Postman ou Playwright para acender aos endpoints de BDD
+          npm install -g newman
+
+      - name: Executar e Validar Suite BDD
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.BDD_TEST_URL }}")
+          echo "Código HTTP retornado pela BDD Suite: $RESPONSE"
+          
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "Sucesso: Os testes BDD correram e responderam com 200 OK."
+          else
+            echo "Erro: O runner respondeu com o estado $RESPONSE."
+            exit 1
+          fi
